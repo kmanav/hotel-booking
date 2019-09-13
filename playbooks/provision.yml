@@ -68,55 +68,6 @@
                 bash -c 'psql $POSTGRESQL_DATABASE $POSTGRESQL_USER -f ddl/hotel-booking.ddl'"
       when: >
         project_already_existed.rc == 1
-    - name: Check if "{{ project_virtual_layer }}" project existed
-      shell: oc project {{ project_virtual_layer }}
-      register: project_already_existed
-      ignore_errors: yes
-    - name: Create Virtual Layer
-      block:
-        - name: Create Project/Namespace
-          shell: "oc new-project {{ project_virtual_layer }} \
-            --display-name='Hotel Booking Virtual Layer' \
-            --description='Hotel Booking Demo'"
-        - name: Create Application
-          block:
-            - name: Import datavirt-app-secret
-              shell: oc create -f https://raw.githubusercontent.com/jboss-openshift/application-templates/master/secrets/datavirt-app-secret.yaml
-              ignore_errors: yes
-            - name : Delete Default Secret
-              shell: oc delete secret datavirt-app-config
-            - name : Create New Secret
-              shell: oc secret new datavirt-app-config datasources.env
-              args:
-                chdir: ../hotel-booking-virtual-layer/env/
-            - name: Create Service Account
-              shell: oc create sa datavirt-service-account
-              ignore_errors: yes
-            - name: Setup Policy
-              shell: oc adm policy add-role-to-user view system:serviceaccount:hotelbooking:datavirt-service-account
-            - name: Provision PostgreSQL persistent
-              shell: "oc new-app datavirt63-extensions-support-s2i \
-                -p APPLICATION_NAME=virtual-layer \
-                -p TEIID_USERNAME=teiidUser \
-                -p TEIID_PASSWORD='redhat1!' \
-                -p SOURCE_REPOSITORY_URL='https://github.com/mcouliba/hotel-booking.git' \
-                -p CONTEXT_DIR='hotel-booking-virtual-layer' \
-                -p VDB_DIRS=vdb \
-                -p EXTENSIONS_REPOSITORY_URL='https://github.com/mcouliba/hotel-booking.git' \
-                -p EXTENSIONS_DIR='hotel-booking-virtual-layer/extensions' \
-                --labels=app=datavirtualization"
-            - name: Adding GDPR users (Waiting for Application Ready)
-              shell: "oc rsh $(oc get pods -lapp=datavirtualization -o name) \ 
-                bash -c '/opt/eap/bin/add-user.sh -a -s -u admin -g admin -p redhat1! && \
-                         /opt/eap/bin/add-user.sh -a -s -u analyst1 -g analyst1 -p redhat1! && \
-                         /opt/eap/bin/add-user.sh -a -s -u analyst2 -g analyst2 -p redhat1! && \
-                         /opt/eap/bin/add-user.sh -a -s -u analyst3 -g analyst3 -p redhat1!'"
-              register: pod_ready
-              until: pod_ready.rc == 0
-              delay: 180
-              retries: 3
-      when: >
-        project_already_existed.rc == 1 
     - name: Check if "{{ project_booking_state }}" project existed
       shell: oc project {{ project_booking_state }}
       register: project_already_existed
@@ -152,10 +103,6 @@
           shell: "oc new-project {{ project_customer }} \
             --display-name='Hotel Booking Customer' \
             --description='Hotel Booking Demo'"
-        - name: Create 'customer-service' ConfigMap
-          shell: oc create configmap customer-service --from-file=etc/application.properties
-          args:
-            chdir: ../hotel-booking-microservice/customer-service/
         - name: Setup Policy
           shell: oc policy add-role-to-user view -n {{ project_customer }} -z default
         - name: Deploy Customer Microservice
@@ -175,10 +122,6 @@
           shell: "oc new-project {{ project_inventory }} \
             --display-name='Hotel Booking Inventory' \
             --description='Hotel Booking Demo'"
-        - name: Create 'inventory-service' ConfigMap
-          shell: oc create configmap inventory-service --from-file=etc/application.properties
-          args:
-            chdir: ../hotel-booking-microservice/inventory-service/
         - name: Setup Policy
           shell: oc policy add-role-to-user view -n {{ project_inventory }} -z default
         - name: Deploy Inventory Microservice
@@ -198,10 +141,6 @@
           shell: "oc new-project {{ project_reservation }} \
             --display-name='Hotel Booking Reservation' \
             --description='Hotel Booking Demo'"
-        - name: Create 'reservation-service' ConfigMap
-          shell: oc create configmap reservation-service --from-file=etc/application.properties
-          args:
-            chdir: ../hotel-booking-microservice/reservation-service/
         - name: Setup Policy
           shell: oc policy add-role-to-user view -n {{ project_reservation }} -z default
         - name: Deploy Reservation Microservice

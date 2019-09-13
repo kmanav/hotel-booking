@@ -40,7 +40,7 @@ class ReservationServiceImpl implements ReservationService {
 
 	@Override
 	public boolean checkin(String reservationId){
-		Reservation reservation2Update = reservationRepository.findOne(reservationId);
+		Reservation reservation2Update = reservationRepository.findById(reservationId).get();
 		reservation2Update.setStatus(ReservationService.CHECKIN_STATUS);
 		reservationRepository.save(reservation2Update);
 		return true;
@@ -48,7 +48,7 @@ class ReservationServiceImpl implements ReservationService {
 
     @Override
     public boolean checkout(String reservationId){
-        Reservation reservation2Update = reservationRepository.findOne(reservationId);
+        Reservation reservation2Update = reservationRepository.findById(reservationId).get();
         reservation2Update.setStatus(ReservationService.CHECKOUT_STATUS);
         reservationRepository.save(reservation2Update);
         return true;
