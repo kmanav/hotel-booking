@@ -14,7 +14,7 @@ spec:
         - livenessProbe:
             failureThreshold: 2
             httpGet:
-              path: "/health"
+              path: "/actuator/health"
               port: 8080
               scheme: HTTP
             initialDelaySeconds: 60
@@ -24,7 +24,7 @@ spec:
           readinessProbe:
             failureThreshold: 3
             httpGet:
-              path: "/health"
+              path: "/actuator/health"
               port: 8080
               scheme: HTTP
             initialDelaySeconds: 20

@@ -80,11 +80,11 @@
             --description='Hotel Booking Demo'"
         - name: Setup Policy
           shell: oc policy add-role-to-user view -z default -n {{ project_booking_state }}
-        - name: Provision RHDG
-          shell: "oc new-app datagrid71-basic \
+        - name: Install Infinispan
+          shell: "oc create -f https://raw.githubusercontent.com/infinispan/infinispan-openshift-templates/master/infinispan-ephemeral.yaml"
+        - name: Provision Infinispan
+          shell: "oc new-app infinispan-ephemeral \
             -p APPLICATION_NAME=sharedcache \
-            -p CACHE_NAMES=bookingStateCache \
-            -e MEMCACHED_CACHE=  \
             --labels=app=booking-state-service"
         - name: Deploy Microservice
           shell: "mvn clean fabric8:deploy -Popenshift -DskipTests"
@@ -106,7 +106,7 @@
         - name: Setup Policy
           shell: oc policy add-role-to-user view -n {{ project_customer }} -z default
         - name: Deploy Customer Microservice
-          shell: "mvn clean fabric8:deploy -Popenshift -DskipTests"
+          shell: "mvn clean fabric8:deploy -Popenshift -DskipTests -Dfabric8.namespace=`oc project -q`"
           args:
             chdir: ../hotel-booking-microservice/customer-service/
       when: >
@@ -125,7 +125,7 @@
         - name: Setup Policy
           shell: oc policy add-role-to-user view -n {{ project_inventory }} -z default
         - name: Deploy Inventory Microservice
-          shell: "mvn clean fabric8:deploy -Popenshift -DskipTests"
+          shell: "mvn clean fabric8:deploy -Popenshift -DskipTests -Dfabric8.namespace=`oc project -q`"
           args:
             chdir: ../hotel-booking-microservice/inventory-service/
       when: >
@@ -144,7 +144,7 @@
         - name: Setup Policy
           shell: oc policy add-role-to-user view -n {{ project_reservation }} -z default
         - name: Deploy Reservation Microservice
-          shell: "mvn clean fabric8:deploy -Popenshift -DskipTests"
+          shell: "mvn clean fabric8:deploy -Popenshift -DskipTests -Dfabric8.namespace=`oc project -q`"
           args:
             chdir: ../hotel-booking-microservice/reservation-service/
       when: >
@@ -170,60 +170,6 @@
           shell: yarn openshift
           args:
             chdir: ../hotel-booking-web-app/
-        - name: Setup ABTesting 
-          block:
-            - name: Update package.json for v2
-              replace:
-                path: ../hotel-booking-web-app/package.json
-                regexp: '"hotel-booking-web-app"'
-                replace: '"hotel-booking-web-app-v2"'
-                backup: yes
-            - name: Update HotelListView.js for v2
-              replace:
-                path: ../hotel-booking-web-app/src/components/ListView/HotelListView.js
-                regexp: 'abtesting hidden'
-                replace: 'abtesting' 
-                backup: yes
-            - name: Update RoomListView.js for v2
-              replace:
-                path: ../hotel-booking-web-app/src/components/ListView/RoomListView.js
-                regexp: 'abtesting hidden'
-                replace: 'abtesting' 
-                backup: yes
-            - name: Update ValidationWizardModal.js for v2
-              replace:
-                path: ../hotel-booking-web-app/src/components/Wizard/ValidationWizardModal.js
-                regexp: 'this.abtesting = false'
-                replace: 'this.abtesting = true' 
-                backup: yes
-            - name: Deploy Microservice v2
-              shell: yarn openshift
-              args:
-                chdir: ../hotel-booking-web-app/
-            - name: Rollback package.json (v2 -> v1)
-              replace:
-                path: ../hotel-booking-web-app/package.json
-                regexp: '"hotel-booking-web-app-v2"'
-                replace: '"hotel-booking-web-app"'
-                backup: yes
-            - name: Rollback HotelListView.js (v2 -> v1)
-              replace:
-                path: ../hotel-booking-web-app/src/components/ListView/HotelListView.js
-                regexp: 'abtesting'
-                replace: 'abtesting hidden' 
-                backup: yes
-            - name: Rollback RoomListView.js (v2 -> v1)
-              replace:
-                path: ../hotel-booking-web-app/src/components/ListView/RoomListView.js
-                regexp: 'abtesting'
-                replace: 'abtesting hidden' 
-                backup: yes
-            - name: Rollback ValidationWizardModal.js (v2 -> v1)
-              replace:
-                path: ../hotel-booking-web-app/src/components/Wizard/ValidationWizardModal.js
-                regexp: 'this.abtesting = true'
-                replace: 'this.abtesting = false' 
-                backup: yes
       when: >
         project_already_existed.rc == 1
       tags: always

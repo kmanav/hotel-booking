@@ -17,7 +17,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <version.teiid.spring-boot>1.2.0-SNAPSHOT</version.teiid.spring-boot>
     <spring-boot.version>2.1.7.RELEASE</spring-boot.version>
-    <version.io.fabric8>4.2.0</version.io.fabric8>
+    <version.io.fabric8>4.1.0</version.io.fabric8>
   </properties>
 
   <dependencyManagement>
@@ -96,10 +96,6 @@
             </goals>
           </execution>
         </executions>
-        <configuration>
-          <jvmArguments>-Djava.net.preferIPv4Stack=true
-            -Dspring.cloud.kubernetes.enabled=false</jvmArguments>
-        </configuration>
       </plugin>
     </plugins>
   </build>
