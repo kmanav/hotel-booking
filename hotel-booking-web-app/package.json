@@ -1,5 +1,5 @@
 {
-  "name": "hotel-booking-web-app",
+  "name": "hotel-booking-web-app-v2",
   "private": true,
   "dependencies": {
     "ajv": "^6.0.0",

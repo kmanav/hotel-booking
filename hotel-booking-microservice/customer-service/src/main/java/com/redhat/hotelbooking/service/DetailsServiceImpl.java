@@ -14,7 +14,6 @@ class DetailsServiceImpl implements DetailsService {
 	@Autowired
 	private DetailsRepository detailsRepository;
 
-	@Override
 	public Details get(Integer customerid) {
 		return detailsRepository.findById(customerid).get();
 	}

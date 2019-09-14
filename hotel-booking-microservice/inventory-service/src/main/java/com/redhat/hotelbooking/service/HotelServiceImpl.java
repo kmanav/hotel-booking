@@ -25,14 +25,11 @@ class HotelServiceImpl implements HotelService {
 	@Value("${BOOKING_STATE_SERVICE_GET_ENDPOINT:http://booking-state-service:8080/getbookingstate}")
 	private String BOOKING_STATE_SERVICE_GET_ENDPOINT;
 
-	@Override
 	public Page<Hotel> listAllByPage(Pageable pageable) {
 		return hotelRepository.findAll(pageable);
 	}
 
-	@Override
 	public Page<Hotel> findByUserID(Pageable pageable, String userid) throws IOException {
-
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<String> response
 				= restTemplate.getForEntity(BOOKING_STATE_SERVICE_GET_ENDPOINT + "/" + userid, String.class);

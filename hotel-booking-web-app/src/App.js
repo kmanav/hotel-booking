@@ -5,7 +5,7 @@ import { Routes } from './Routes';
 import { MastHead } from './components/Nav/MastHead';
 import VerticalNav from './components/Nav/VerticalNav';
 import { Credentials } from './models/credentials';
-import './css/App.css';
+//import './css/App.css';
 
 type Props = {
   history: Array<string>,

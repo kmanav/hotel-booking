@@ -13,7 +13,6 @@ class AuthenticationServiceImpl implements AuthenticationService {
 	@Autowired
 	private AuthenticationRepository authenticationRepository;
 
-	@Override
 	public Authentication authenticate(String email) {
 		return authenticationRepository.findByEmail(email);
 	}

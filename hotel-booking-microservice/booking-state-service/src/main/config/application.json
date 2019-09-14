@@ -1,6 +1,0 @@
-{
-  "SHAREDCACHE_HOTROD_SERVICE_HOST" : "localhost"
-  , "SHAREDCACHE_HOTROD_SERVICE_PORT" : 21222
-  , "HTTP_HOST" : "localhost"
-  , "HTTP_PORT" : 4000
-}

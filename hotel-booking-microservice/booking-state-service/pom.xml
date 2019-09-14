@@ -12,150 +12,114 @@
   <name>booking-state-service</name>
   <description>Booking State Service for Hotel Booking Demo</description>
 
-  <parent>
-    <groupId>io.openshift</groupId>
-    <artifactId>booster-parent</artifactId>
-    <version>6</version>
-  </parent>
-
   <properties>
-    <infinispan.version>9.1.6.Final</infinispan.version>
-    <vertx.version>3.5.1</vertx.version>
-    <vertx-maven-plugin.version>1.0.13</vertx-maven-plugin.version>
-    <fabric8-maven-plugin.version>3.5.32</fabric8-maven-plugin.version>
-    <vertx.verticle>com.redhat.hotelbooking.BookingStateRestAPI</vertx.verticle>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <version.teiid.spring-boot>1.2.0-SNAPSHOT</version.teiid.spring-boot>
+    <spring-boot.version>2.1.7.RELEASE</spring-boot.version>
+    <version.io.fabric8>4.1.0</version.io.fabric8>
   </properties>
 
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>io.vertx</groupId>
-        <artifactId>vertx-dependencies</artifactId>
-        <version>${vertx.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.infinispan</groupId>
-        <artifactId>infinispan-bom</artifactId>
-        <version>${infinispan.version}</version>
+        <groupId>org.teiid</groupId>
+        <artifactId>teiid-spring-boot-starter-parent</artifactId>
+        <version>${version.teiid.spring-boot}</version>
         <scope>import</scope>
         <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>com.github.akarnokd</groupId>
-        <artifactId>rxjava2-jdk8-interop</artifactId>
-        <version>0.2.6</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.reactivestreams</groupId>
-            <artifactId>reactive-streams</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>io.reactivex.rxjava2</groupId>
-            <artifactId>rxjava</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
     </dependencies>
   </dependencyManagement>
 
   <dependencies>
     <dependency>
-      <groupId>io.vertx</groupId>
-      <artifactId>vertx-core</artifactId>
+        <groupId>org.json</groupId>
+        <artifactId>json</artifactId>
+        <version>20190722</version>
+    </dependency>
+  
+    <!-- Spring -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.vertx</groupId>
-      <artifactId>vertx-web</artifactId>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-undertow</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.vertx</groupId>
-      <artifactId>vertx-web-client</artifactId>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.vertx</groupId>
-      <artifactId>vertx-rx-java2</artifactId>
-    </dependency>
-
-    <!-- Vertx Configuration Service -->
-    <dependency>
-      <groupId>io.vertx</groupId>
-      <artifactId>vertx-config</artifactId>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.vertx</groupId>
-      <artifactId>vertx-config-kubernetes-configmap</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.vertx</groupId>
-      <artifactId>vertx-config-yaml</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.7.22</version>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
     </dependency>
 
+    <!-- Swagger -->
     <dependency>
-      <groupId>com.github.akarnokd</groupId>
-      <artifactId>rxjava2-jdk8-interop</artifactId>
+      <groupId>io.springfox</groupId>
+      <artifactId>springfox-swagger2</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.infinispan</groupId>
-      <artifactId>infinispan-client-hotrod</artifactId>
+      <groupId>io.springfox</groupId>
+      <artifactId>springfox-swagger-ui</artifactId>
     </dependency>
   </dependencies>
 
   <build>
     <plugins>
       <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.7.0</version>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>io.fabric8</groupId>
-        <artifactId>vertx-maven-plugin</artifactId>
-        <version>${vertx-maven-plugin.version}</version>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>${spring-boot.version}</version>
         <executions>
           <execution>
-            <id>vmp</id>
             <goals>
-              <goal>initialize</goal>
-              <goal>package</goal>
+              <goal>repackage</goal>
             </goals>
           </execution>
         </executions>
-        <configuration>
-          <redeploy>true</redeploy>
-        </configuration>
       </plugin>
     </plugins>
   </build>
-
   <profiles>
     <profile>
       <id>openshift</id>
-      <properties>
-        <test.to.exclude />
-      </properties>
       <build>
         <plugins>
           <plugin>
             <groupId>io.fabric8</groupId>
             <artifactId>fabric8-maven-plugin</artifactId>
-            <version>${fabric8-maven-plugin.version}</version>
+            <version>${version.io.fabric8}</version>
+            <configuration>
+              <generator>
+                <includes>
+                  <include>spring-boot</include>
+                </includes>
+                <config>
+                  <spring-boot>
+                    <from>fabric8/s2i-java:latest-java11</from>
+                    <name>${fabric8.namespace}/${project.artifactId}:${project.version}</name>
+                  </spring-boot>
+                </config>
+              </generator>
+            </configuration>
             <executions>
               <execution>
-                <id>fmp</id>
+                <id>build</id>
                 <goals>
                   <goal>resource</goal>
                   <goal>build</goal>
+                  <goal>apply</goal>
                 </goals>
+                <phase>package</phase>
               </execution>
             </executions>
           </plugin>
@@ -163,5 +127,4 @@
       </build>
     </profile>
   </profiles>
-
 </project>

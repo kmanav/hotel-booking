@@ -2,12 +2,39 @@ apiVersion: v1
 kind: Deployment
 metadata:
   name: ${project.artifactId}
+  labels:
+    app: ${project.artifactId}
+    group: ${project.groupId}
+    provider: fabric8
+    version: ${project.version}
 spec:
   template:
     spec:
       containers:
-        - env:
-            # - name: SHAREDCACHE_HOTROD_SERVICE_HOST
-            #   value: "${SHAREDCACHE_HOTROD_SERVICE_HOST}"
-            # - name: SHAREDCACHE_HOTROD_SERVICE_PORT
-            #   value: "${SHAREDCACHE_HOTROD_SERVICE_PORT}"
+        - livenessProbe:
+            failureThreshold: 2
+            httpGet:
+              path: "/actuator/health"
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: "/actuator/health"
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: 1
+              memory: 1Gi
+            requests:
+              cpu: 200m
+              memory: 200Mi

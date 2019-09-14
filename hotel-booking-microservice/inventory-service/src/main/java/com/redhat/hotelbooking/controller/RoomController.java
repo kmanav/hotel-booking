@@ -1,9 +1,7 @@
 package com.redhat.hotelbooking.controller;
 
-import com.redhat.hotelbooking.bean.Hotel;
-import com.redhat.hotelbooking.bean.Room;
-import com.redhat.hotelbooking.service.HotelService;
-import com.redhat.hotelbooking.service.RoomService;
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,7 +10,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
+import com.redhat.hotelbooking.bean.Room;
+import com.redhat.hotelbooking.service.RoomService;
 
 
 @RestController
