@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,8 +23,8 @@ public class BookingStateRestAPI {
     private final Logger logger = Logger.getLogger(BookingStateRestAPI.class.getName());
     HashMap<String, String> defaultCache = new HashMap<String, String>();
 
-    @RequestMapping(method = RequestMethod.GET, name = "/getbookingstate/{id}")
-    public String handleGetorCreate(String id) {
+    @RequestMapping(method = RequestMethod.GET, value = "/getbookingstate/{id}")
+    public String handleGetorCreate(@PathVariable String id) {
         logger.info("Get by id Booking State id=" + id);
         String data = defaultCache.get(id);
         if (data == null) {
@@ -32,22 +33,22 @@ public class BookingStateRestAPI {
         return data;
     }
 
-    @RequestMapping(method = RequestMethod.POST, name="/bookingstate/setsearch")
+    @RequestMapping(method = RequestMethod.POST, value="/bookingstate/setsearch")
     public ResponseEntity<HttpStatus> handleSetSearch(@RequestBody String reservation) throws IOException {
-    	logger.info("Set Search");
+    	logger.info("Set Search = " + reservation);
     	if (reservation != null) {
 	    	ObjectMapper mapper = new ObjectMapper();
 	    	JsonNode root = mapper.readTree(reservation);
 	    	if (root.get("id") != null) {
 			    defaultCache.put(root.get("id").asText(), reservation);
-			    return new ResponseEntity<HttpStatus>(HttpStatus.ACCEPTED);
+			    return new ResponseEntity<HttpStatus>(HttpStatus.CREATED);
 	    	}
     	} 
     	return new ResponseEntity<HttpStatus>(HttpStatus.BAD_REQUEST);
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, name = "/deletebookingstate/{id}")
-    public ResponseEntity<HttpStatus> handleDelete(String id) {
+    @RequestMapping(method = RequestMethod.DELETE, value = "/deletebookingstate/{id}")
+    public ResponseEntity<HttpStatus> handleDelete(@PathVariable("id") String id) {
         logger.info("DeleteBooking State id=" + id);
         String data = defaultCache.remove(id);
         if (data != null) {
